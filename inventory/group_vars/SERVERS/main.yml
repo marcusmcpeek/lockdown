@@ -1,0 +1,9 @@
+---
+# port_profiles:
+#   - profile: PP_TRUNK
+#     mode: trunk
+#     vlans: "10,30"
+
+connected_endpoints_keys:
+  - key: rack1_hosts
+    type: server

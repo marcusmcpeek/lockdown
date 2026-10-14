@@ -1,0 +1,313 @@
+aaa_root:
+  disabled: true
+config_end: true
+enable_password:
+  disabled: true
+ethernet_interfaces:
+- name: Ethernet1/1
+  description: P2P_dalle-1_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.2/31
+  metadata:
+    peer: dalle-1
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet2/1
+  description: P2P_dalle-2_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.8/31
+  metadata:
+    peer: dalle-2
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet3/1
+  description: P2P_dalle-3_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.14/31
+  metadata:
+    peer: dalle-3
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet4/1
+  description: P2P_dalle-4_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.20/31
+  metadata:
+    peer: dalle-4
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet5/1
+  description: P2P_dalle-5_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.26/31
+  metadata:
+    peer: dalle-5
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet6/1
+  description: P2P_dalle-6_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.32/31
+  metadata:
+    peer: dalle-6
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet7/1
+  description: P2P_dalle-7_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.38/31
+  metadata:
+    peer: dalle-7
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+- name: Ethernet8/1
+  description: P2P_dalle-8_Ethernet50/1
+  shutdown: false
+  mtu: 1500
+  ip_address: 172.16.30.44/31
+  metadata:
+    peer: dalle-8
+    peer_interface: Ethernet50/1
+    peer_type: l3leaf
+  switchport:
+    enabled: false
+hostname: dalsp-2
+ip_domain_lookup:
+  source_interfaces:
+  - name: Management1
+    vrf: MGMT
+ip_name_server:
+  vrfs:
+  - name: MGMT
+    servers:
+    - ip_address: 8.8.8.8
+ip_routing: true
+local_users:
+- name: cvpadmin
+  privilege: 15
+  role: network-admin
+  sha512_password: $6$randomsalt$d42U/25/GBX/OjXDKdw51Vm71sERu.lTUjg66/Ro2b7vSBdJEvNgn0yDE0AV2V3RZvz4ukGjWFtCxqM3DQzEU1
+loopback_interfaces:
+- name: Loopback0
+  description: ROUTER_ID
+  shutdown: false
+  ip_address: 172.16.31.2/32
+management_api_http:
+  enable_https: true
+  enable_vrfs:
+  - name: MGMT
+management_interfaces:
+- name: Management1
+  description: OOB_MANAGEMENT
+  shutdown: false
+  vrf: MGMT
+  ip_address: 192.168.0.12/24
+  type: oob
+metadata:
+  is_deployed: true
+  platform: vEOS-LAB
+  pod_name: DAL_DC1
+  fabric_name: DAL
+ntp:
+  local_interface:
+    name: Management1
+    vrf: MGMT
+  servers:
+  - name: 0.pool.ntp.org
+    preferred: true
+  - name: 1.pool.ntp.org
+  vrf: MGMT
+prefix_lists:
+- name: PL-LOOPBACKS-EVPN-OVERLAY
+  sequence_numbers:
+  - sequence: 10
+    action: permit 172.16.31.0/24 eq 32
+route_maps:
+- name: RM-CONN-2-BGP
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    match:
+    - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+router_bfd:
+  multihop:
+    interval: 300
+    min_rx: 300
+    multiplier: 3
+router_bgp:
+  as: '65100'
+  router_id: 172.16.31.2
+  maximum_paths:
+    paths: 4
+    ecmp: 4
+  updates:
+    wait_install: true
+  bgp_defaults:
+  - no bgp default ipv4-unicast
+  - distance bgp 20 200 200
+  - graceful-restart restart-time 300
+  - graceful-restart
+  bgp:
+    default:
+      ipv4_unicast: false
+  peer_groups:
+  - name: IPv4-UNDERLAY-PEERS
+    metadata:
+      type: ipv4
+    password: AQQvKeimxJu+uGQ/yYvv9w==
+    send_community: all
+    maximum_routes: 256000
+  - name: EVPN-OVERLAY-PEERS
+    metadata:
+      type: evpn
+    next_hop_unchanged: true
+    update_source: Loopback0
+    bfd: true
+    ebgp_multihop: 3
+    password: q+VNViP5i4rVjW1cxFv2wA==
+    send_community: all
+    maximum_routes: 0
+  neighbors:
+  - ip_address: 172.16.30.3
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65101'
+    metadata:
+      peer: dalle-1
+    description: dalle-1_Ethernet50/1
+  - ip_address: 172.16.30.9
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65101'
+    metadata:
+      peer: dalle-2
+    description: dalle-2_Ethernet50/1
+  - ip_address: 172.16.30.15
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65102'
+    metadata:
+      peer: dalle-3
+    description: dalle-3_Ethernet50/1
+  - ip_address: 172.16.30.21
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65102'
+    metadata:
+      peer: dalle-4
+    description: dalle-4_Ethernet50/1
+  - ip_address: 172.16.30.27
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65103'
+    metadata:
+      peer: dalle-5
+    description: dalle-5_Ethernet50/1
+  - ip_address: 172.16.30.33
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65103'
+    metadata:
+      peer: dalle-6
+    description: dalle-6_Ethernet50/1
+  - ip_address: 172.16.30.39
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65104'
+    metadata:
+      peer: dalle-7
+    description: dalle-7_Ethernet50/1
+  - ip_address: 172.16.30.45
+    peer_group: IPv4-UNDERLAY-PEERS
+    remote_as: '65104'
+    metadata:
+      peer: dalle-8
+    description: dalle-8_Ethernet50/1
+  - ip_address: 172.16.31.5
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65101'
+    metadata:
+      peer: dalle-1
+    description: dalle-1_Loopback0
+  - ip_address: 172.16.31.6
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65101'
+    metadata:
+      peer: dalle-2
+    description: dalle-2_Loopback0
+  - ip_address: 172.16.31.7
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65102'
+    metadata:
+      peer: dalle-3
+    description: dalle-3_Loopback0
+  - ip_address: 172.16.31.8
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65102'
+    metadata:
+      peer: dalle-4
+    description: dalle-4_Loopback0
+  - ip_address: 172.16.31.9
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65103'
+    metadata:
+      peer: dalle-5
+    description: dalle-5_Loopback0
+  - ip_address: 172.16.31.10
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65103'
+    metadata:
+      peer: dalle-6
+    description: dalle-6_Loopback0
+  - ip_address: 172.16.31.11
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65104'
+    metadata:
+      peer: dalle-7
+    description: dalle-7_Loopback0
+  - ip_address: 172.16.31.12
+    peer_group: EVPN-OVERLAY-PEERS
+    remote_as: '65104'
+    metadata:
+      peer: dalle-8
+    description: dalle-8_Loopback0
+  redistribute:
+    connected:
+      enabled: true
+      route_map: RM-CONN-2-BGP
+  address_family_evpn:
+    peer_groups:
+    - name: EVPN-OVERLAY-PEERS
+      activate: true
+  address_family_ipv4:
+    peer_groups:
+    - name: IPv4-UNDERLAY-PEERS
+      activate: true
+    - name: EVPN-OVERLAY-PEERS
+      activate: false
+service_routing_protocols_model: multi-agent
+spanning_tree:
+  mode: none
+transceiver_qsfp_default_mode_4x10: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+vrfs:
+- name: MGMT
+  ip_routing: false

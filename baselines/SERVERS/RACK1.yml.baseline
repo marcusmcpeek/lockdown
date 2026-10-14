@@ -1,0 +1,15 @@
+---
+rack1_hosts:
+  - name: HOST1
+    rack: RACK1
+    adapters:
+      - endpoint_ports: [Ethernet1, Ethernet2]
+        switch_ports: [Ethernet5/1, Ethernet5/1]
+        switches: [dalle-1, dalle-2]
+        description: HOST1
+        vlans: "10,20,30"
+        mode: trunk
+        speed: 10g
+        enabled: true
+        port_channel:
+          mode: active

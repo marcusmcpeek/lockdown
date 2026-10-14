@@ -1,0 +1,60 @@
+---
+all:
+  children:
+    DAL:
+      vars:
+        ansible_connection: ansible.netcommon.httpapi
+        ansible_network_os: arista.eos.eos
+        ansible_user: cvpadmin
+        ansible_password: "cvp123!"
+        ansible_become: true
+        ansible_become_method: enable
+        ansible_httpapi_use_ssl: true
+        ansible_httpapi_validate_certs: false
+      children:
+        DAL_DC1:
+          children:
+            DAL_DC1_SPINES:
+              vars:
+                type: spine
+              hosts:
+                dalsp-1:
+                  ansible_host: 192.168.0.11
+                dalsp-2:
+                  ansible_host: 192.168.0.12
+                dalsp-3:
+                  ansible_host: 192.168.0.13
+            DAL_DC1_L3LEAFS:
+              vars:
+                type: l3leaf
+              children:
+                DAL_DC1_LEAF1:
+                  hosts:
+                    dalle-1:
+                      ansible_host: 192.168.0.14
+                    dalle-2:
+                      ansible_host: 192.168.0.15
+                DAL_DC1_LEAF2:
+                  hosts:
+                    dalle-3:
+                      ansible_host: 192.168.0.16
+                    dalle-4:
+                      ansible_host: 192.168.0.17
+                DAL_DC1_LEAF3:
+                  hosts:
+                    dalle-5:
+                      ansible_host: 192.168.0.18
+                    dalle-6:
+                      ansible_host: 192.168.0.19
+                DAL_DC1_LEAF4:
+                  hosts:
+                    dalle-7:
+                      ansible_host: 192.168.0.20
+                    dalle-8:
+                      ansible_host: 192.168.0.21
+        NETWORK_SERVICES:
+          children:
+            DAL_DC1_L3LEAFS:
+        SERVERS:
+          children:
+            DAL_DC1_L3LEAFS:

@@ -1,0 +1,26 @@
+---
+- name: Build DAL fabric configs (server operator)
+  hosts: DAL
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+  pre_tasks:
+    - name: Validate RACK files against baselines
+      ansible.builtin.command:
+        cmd: >
+          python3 {{ playbook_dir }}/../scripts/validate_rack_keys.py
+          --baselines-dir {{ playbook_dir }}/../baselines/SERVERS/
+          --servers-dir {{ playbook_dir }}/../inventory/group_vars/SERVERS/
+      register: validation_result
+      changed_when: false
+      failed_when: validation_result.rc != 0
+      run_once: true
+      delegate_to: localhost
+  tasks:
+    - name: Generate intended variables
+      import_role:
+        name: arista.avd.eos_designs
+    - name: Generate device intended config and documentation
+      import_role:
+        name: arista.avd.eos_cli_config_gen

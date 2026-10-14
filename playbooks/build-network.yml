@@ -1,0 +1,21 @@
+---
+- name: Build DAL fabric configs (network operator)
+  hosts: DAL
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+  tasks:
+    - name: Generate intended variables
+      import_role:
+        name: arista.avd.eos_designs
+    - name: Generate device intended config and documentation
+      import_role:
+        name: arista.avd.eos_cli_config_gen
+  post_tasks:
+    - name: Update baselines from current RACK files
+      ansible.builtin.command:
+        cmd: "../scripts/lock_baselines.sh"
+      changed_when: true
+      run_once: true
+      delegate_to: localhost
